@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: #0a0a0f;
+    color: #e2e8f0;
+  }
+  
+  .font-tech {
+    font-family: 'Orbitron', monospace;
+  }
+}
+
+@layer components {
+  .circuit-bg {
+    background-image: 
+      radial-gradient(circle at 25% 25%, #1e293b 2px, transparent 2px),
+      radial-gradient(circle at 75% 75%, #334155 1px, transparent 1px),
+      linear-gradient(45deg, transparent 40%, rgba(59, 130, 246, 0.1) 50%, transparent 60%);
+    background-size: 60px 60px, 40px 40px, 100px 100px;
+    animation: circuitFlow 20s linear infinite;
+  }
+  
+  .circuit-pattern {
+    background-image: 
+      linear-gradient(90deg, transparent 48%, #1e293b 49%, #1e293b 51%, transparent 52%),
+      linear-gradient(0deg, transparent 48%, #1e293b 49%, #1e293b 51%, transparent 52%);
+    background-size: 20px 20px;
+    opacity: 0.3;
+  }
+  
+  .neon-glow {
+    box-shadow: 
+      0 0 5px theme('colors.cyan.400'),
+      0 0 10px theme('colors.cyan.400'),
+      0 0 15px theme('colors.cyan.400'),
+      0 0 20px theme('colors.cyan.400');
+  }
+  
+  .neon-glow-purple {
+    box-shadow: 
+      0 0 5px theme('colors.purple.400'),
+      0 0 10px theme('colors.purple.400'),
+      0 0 15px theme('colors.purple.400');
+  }
+  
+  .neon-glow-green {
+    box-shadow: 
+      0 0 5px theme('colors.emerald.400'),
+      0 0 10px theme('colors.emerald.400'),
+      0 0 15px theme('colors.emerald.400');
+  }
+  
+  .neon-text {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor;
+  }
+  
+  .glass-card {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+  
+  .glass-card-purple {
+    background: rgba(30, 27, 75, 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(147, 51, 234, 0.3);
+  }
+  
+  .pulse-ring {
+    animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+  }
+  
+  .live-indicator {
+    animation: livePulse 1.5s ease-in-out infinite;
+  }
+  
+  .tech-grid {
+    background-image: 
+      linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .hologram {
+    background: linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.1) 50%, transparent 70%);
+    background-size: 20px 20px;
+    animation: hologramShift 3s linear infinite;
+  }
+}
+
+@keyframes circuitFlow {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 60px 60px, -40px -40px, 100px 100px; }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.33);
+    opacity: 1;
+  }
+  80%, 100% {
+    transform: scale(2.33);
+    opacity: 0;
+  }
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes hologramShift {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 20px; }
+}
+
+@keyframes dataFlow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.data-stream {
+  animation: dataFlow 2s linear infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa;
+}
