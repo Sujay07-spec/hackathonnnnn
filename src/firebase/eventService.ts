@@ -10,7 +10,7 @@ import {
   onSnapshot,
   Timestamp 
 } from 'firebase/firestore';
-import { db } from './config';
+import { db } from './config';  // Ensure this points correctly to your firebase config export
 import { Event, TodoItem } from '../types';
 import { updateEventStatus } from '../utils/dateUtils';
 
@@ -47,31 +47,32 @@ export const deleteEventFromFirestore = async (id: string) => {
     const eventRef = doc(db, EVENTS_COLLECTION, id);
     await deleteDoc(eventRef);
     
-    // Also delete all todos for this event
+    // Delete all todos linked to this event
     const todosQuery = query(collection(db, TODOS_COLLECTION));
     const todosSnapshot = await getDocs(todosQuery);
-    
+
+    // Filter and delete todos linked to the event id
     const deletePromises = todosSnapshot.docs
-      .filter(doc => doc.data().eventId === id)
-      .map(doc => deleteDoc(doc.ref));
+      .filter(todoDoc => todoDoc.data()?.eventId === id)
+      .map(todoDoc => deleteDoc(todoDoc.ref));
     
     await Promise.all(deletePromises);
+
   } catch (error) {
-    console.error('Error deleting event:', error);
+    console.error('Error deleting event and todos:', error);
     throw error;
   }
 };
 
 export const subscribeToEvents = (callback: (events: Event[]) => void) => {
   const q = query(collection(db, EVENTS_COLLECTION), orderBy('createdAt', 'desc'));
-  
   return onSnapshot(q, (snapshot) => {
-    const events: Event[] = snapshot.docs.map(doc => {
+    const events = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
         ...data,
-        createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        createdAt: data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
       } as Event;
     });
     callback(events);
@@ -114,14 +115,13 @@ export const deleteTodoFromFirestore = async (id: string) => {
 
 export const subscribeToTodos = (callback: (todos: TodoItem[]) => void) => {
   const q = query(collection(db, TODOS_COLLECTION), orderBy('createdAt', 'desc'));
-  
   return onSnapshot(q, (snapshot) => {
-    const todos: TodoItem[] = snapshot.docs.map(doc => {
+    const todos = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
         ...data,
-        createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        createdAt: data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
       } as TodoItem;
     });
     callback(todos);
