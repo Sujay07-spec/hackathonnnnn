@@ -93,6 +93,8 @@ export const EventForm: React.FC<EventFormProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg">
+                  <option value="webinar">Webinar</option>
+                  <option value="government">Government</option>
                 <Settings size={20} className="text-slate-900" />
               </div>
               <h2 className="text-2xl font-bold text-cyan-400 font-tech">

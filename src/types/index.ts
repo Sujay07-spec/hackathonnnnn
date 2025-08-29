@@ -1,4 +1,4 @@
-export type EventType = 'event' | 'hackathon';
+export type EventType = 'event' | 'hackathon' | 'webinar' | 'government';
 
 export type EventStatus = 'upcoming' | 'live' | 'ongoing' | 'ended';
 

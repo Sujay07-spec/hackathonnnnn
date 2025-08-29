@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, ExternalLink, Clock, Zap, Tag, Trash2, Edit3, Cpu, Activity } from 'lucide-react';
+import { Calendar, ExternalLink, Clock, Zap, Tag, Trash2, Edit3, Cpu, Activity, Code, Video, Building } from 'lucide-react';
 import { Event } from '../types';
 import { formatDate } from '../utils/dateUtils';
 
@@ -61,6 +61,19 @@ export const EventCard: React.FC<EventCardProps> = ({
     }
   };
 
+  const getTypeConfig = (type: string) => {
+    const configs = {
+      hackathon: { label: 'HACK', icon: Code, colors: 'bg-emerald-500 text-slate-900', border: 'border-emerald-400/30' },
+      event: { label: 'EVENT', icon: Calendar, colors: 'bg-blue-500 text-slate-900', border: 'border-blue-400/30' },
+      webinar: { label: 'WEBINAR', icon: Video, colors: 'bg-purple-500 text-slate-900', border: 'border-purple-400/30' },
+      government: { label: 'GOV', icon: Building, colors: 'bg-amber-500 text-slate-900', border: 'border-amber-400/30' },
+    };
+    return configs[type as keyof typeof configs] || configs.event;
+  };
+
+  const typeConfig = getTypeConfig(event.type);
+  const TypeIcon = typeConfig.icon;
+
   return (
     <div 
       className={`glass-card rounded-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 hover:scale-105 ${config.bgGlow} group relative overflow-hidden`}
@@ -82,8 +95,9 @@ export const EventCard: React.FC<EventCardProps> = ({
               <StatusIcon size={12} />
               {config.label}
             </div>
-            <div className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-700 text-purple-400 border border-purple-400/30">
-              {event.type === 'hackathon' ? 'HACK' : 'EVENT'}
+            <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${typeConfig.colors} ${typeConfig.border}`}>
+              <TypeIcon size={12} />
+              {typeConfig.label}
             </div>
           </div>
           <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">

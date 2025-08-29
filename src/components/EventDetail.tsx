@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Calendar, ExternalLink, Tag, Plus, Cpu, Activity, Zap } from 'lucide-react';
+import { ArrowLeft, Calendar, ExternalLink, Tag, Plus, Cpu, Activity, Zap, Code, Video, Building } from 'lucide-react';
 import { Event, TodoItem } from '../types';
 import { formatDateTime } from '../utils/dateUtils';
 import { TodoList } from './TodoList';
@@ -55,6 +55,39 @@ export const EventDetail: React.FC<EventDetailProps> = ({
   const config = statusConfig[event.status];
   const isLive = event.status === 'live';
 
+  const getTypeConfig = (type: string) => {
+    const configs = {
+      hackathon: { 
+        label: 'HACKATHON PROTOCOL', 
+        icon: Code, 
+        colors: 'text-emerald-400',
+        bgGradient: 'from-emerald-500/20 to-green-500/20'
+      },
+      event: { 
+        label: 'EVENT PROTOCOL', 
+        icon: Calendar, 
+        colors: 'text-blue-400',
+        bgGradient: 'from-blue-500/20 to-indigo-500/20'
+      },
+      webinar: { 
+        label: 'WEBINAR PROTOCOL', 
+        icon: Video, 
+        colors: 'text-purple-400',
+        bgGradient: 'from-purple-500/20 to-violet-500/20'
+      },
+      government: { 
+        label: 'GOVERNMENT PROTOCOL', 
+        icon: Building, 
+        colors: 'text-amber-400',
+        bgGradient: 'from-amber-500/20 to-orange-500/20'
+      },
+    };
+    return configs[type as keyof typeof configs] || configs.event;
+  };
+
+  const typeConfig = getTypeConfig(event.type);
+  const TypeIcon = typeConfig.icon;
+
   return (
     <div className="min-h-screen bg-slate-900 circuit-bg relative overflow-hidden">
       <div className="absolute inset-0 tech-grid opacity-10"></div>
@@ -98,8 +131,9 @@ export const EventDetail: React.FC<EventDetailProps> = ({
               <h1 className="text-4xl font-black text-slate-100 mb-3 font-tech neon-text">
                 {event.name}
               </h1>
-              <p className="text-purple-400 text-xl font-bold uppercase tracking-wider">
-                {event.type === 'hackathon' ? 'HACKATHON PROTOCOL' : 'EVENT PROTOCOL'}
+              <p className={`text-xl font-bold uppercase tracking-wider flex items-center gap-3 ${typeConfig.colors}`}>
+                <TypeIcon size={24} />
+                {typeConfig.label}
               </p>
             </div>
           </div>

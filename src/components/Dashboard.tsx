@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Filter, Search, Zap, Cpu, Wifi, Activity } from 'lucide-react';
+import { Plus, Filter, Search, Zap, Cpu, Wifi, Activity, Code, Calendar, Video, Building } from 'lucide-react';
 import { Event, TodoItem, FilterOptions } from '../types';
 import { EventCard } from './EventCard';
 import { updateEventStatus } from '../utils/dateUtils';
@@ -28,6 +28,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
     sortBy: 'date',
     sortOrder: 'asc',
   });
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+
+  const categoryConfig = {
+    all: { label: 'All Categories', icon: Zap, color: 'cyan', count: 0 },
+    hackathon: { label: 'Hackathons', icon: Code, color: 'emerald', count: 0 },
+    event: { label: 'Events', icon: Calendar, color: 'blue', count: 0 },
+    webinar: { label: 'Webinars', icon: Video, color: 'purple', count: 0 },
+    government: { label: 'Government', icon: Building, color: 'amber', count: 0 },
+  };
+
+  // Calculate category counts
+  const categoryCounts = useMemo(() => {
+    const counts = { ...categoryConfig };
+    events.forEach(event => {
+      if (counts[event.type]) {
+        counts[event.type].count++;
+      }
+    });
+    counts.all.count = events.length;
+    return counts;
+  }, [events]);
 
   const filteredAndSortedEvents = useMemo(() => {
     let filtered = events
@@ -37,7 +58,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           event.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
         
         const matchesStatus = filters.status === 'all' || event.status === filters.status;
-        const matchesType = filters.type === 'all' || event.type === filters.type;
+        const matchesType = activeCategory === 'all' || event.type === activeCategory;
         
         return matchesSearch && matchesStatus && matchesType;
       });
@@ -61,7 +82,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     });
 
     return filtered;
-  }, [events, searchTerm, filters]);
+  }, [events, searchTerm, filters, activeCategory]);
 
   const getEventStats = () => {
     const updated = events.map(updateEventStatus);
@@ -103,17 +124,77 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </div>
             <div>
-              <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 font-tech neon-text">
-                NEXUS
+              <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 font-tech neon-text">
+                MANAGEMENT SYSTEM
               </h1>
               <div className="text-lg text-slate-300 font-medium tracking-wider">
-                EVENT TRACKING SYSTEM
+                EVENT TRACKING PLATFORM
               </div>
             </div>
           </div>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Advanced monitoring and management for hackathons, competitions, and tech events
+            Advanced monitoring and management for all types of events and initiatives
           </p>
+        </div>
+
+        {/* Category Filter Buttons */}
+        <div className="mb-8">
+          <div className="glass-card rounded-xl p-6 border border-cyan-400/20">
+            <h3 className="text-lg font-bold text-cyan-400 mb-4 font-tech uppercase tracking-wider flex items-center gap-2">
+              <Filter size={20} />
+              Category Filters
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {Object.entries(categoryCounts).map(([key, config]) => {
+                const Icon = config.icon;
+                const isActive = activeCategory === key;
+                const colorClasses = {
+                  cyan: {
+                    active: 'from-cyan-500 to-blue-600 text-slate-900 shadow-cyan-400/25 neon-glow',
+                    inactive: 'border-cyan-400/30 text-cyan-400 hover:bg-cyan-400/10',
+                  },
+                  emerald: {
+                    active: 'from-emerald-500 to-green-600 text-slate-900 shadow-emerald-400/25 neon-glow-green',
+                    inactive: 'border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10',
+                  },
+                  blue: {
+                    active: 'from-blue-500 to-indigo-600 text-slate-900 shadow-blue-400/25',
+                    inactive: 'border-blue-400/30 text-blue-400 hover:bg-blue-400/10',
+                  },
+                  purple: {
+                    active: 'from-purple-500 to-violet-600 text-slate-900 shadow-purple-400/25 neon-glow-purple',
+                    inactive: 'border-purple-400/30 text-purple-400 hover:bg-purple-400/10',
+                  },
+                  amber: {
+                    active: 'from-amber-500 to-orange-600 text-slate-900 shadow-amber-400/25',
+                    inactive: 'border-amber-400/30 text-amber-400 hover:bg-amber-400/10',
+                  },
+                };
+                
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveCategory(key)}
+                    className={`p-4 rounded-lg transition-all duration-300 font-bold text-sm uppercase tracking-wider border-2 ${
+                      isActive
+                        ? `bg-gradient-to-r ${colorClasses[config.color as keyof typeof colorClasses].active}`
+                        : `bg-slate-800/50 ${colorClasses[config.color as keyof typeof colorClasses].inactive}`
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <Icon size={20} />
+                      <span className="font-tech">{config.label}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        isActive ? 'bg-black/20' : 'bg-slate-700'
+                      }`}>
+                        {config.count}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Stats Grid */}
@@ -186,6 +267,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <option value="all">All Types</option>
                 <option value="hackathon">Hackathons</option>
                 <option value="event">Events</option>
+                <option value="webinar">Webinars</option>
+                <option value="government">Government</option>
               </select>
 
               <button
