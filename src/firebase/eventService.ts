@@ -127,4 +127,3 @@ export const subscribeToTodos = (callback: (todos: TodoItem[]) => void) => {
     callback(todos);
   });
 };
-</parameter>
