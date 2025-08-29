@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 import { Event, TodoItem } from '../types';
+import { updateEventStatus } from '../utils/dateUtils';
 
 const EVENTS_COLLECTION = 'events';
 const TODOS_COLLECTION = 'todos';
@@ -19,8 +20,9 @@ const TODOS_COLLECTION = 'todos';
 // Event operations
 export const addEventToFirestore = async (eventData: Omit<Event, 'id' | 'status' | 'createdAt'>) => {
   try {
+    const eventWithStatus = updateEventStatus({ ...eventData } as Event);
     const docRef = await addDoc(collection(db, EVENTS_COLLECTION), {
-      ...eventData,
+      ...eventWithStatus,
       createdAt: Timestamp.now(),
     });
     return docRef.id;

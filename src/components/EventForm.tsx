@@ -125,6 +125,8 @@ export const EventForm: React.FC<EventFormProps> = ({
               >
                 <option value="hackathon">Hackathon</option>
                 <option value="event">Event</option>
+                <option value="webinar">Webinar</option>
+                <option value="government">Government</option>
               </select>
             </div>
 
