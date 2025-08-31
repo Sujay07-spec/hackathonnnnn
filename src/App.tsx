@@ -12,6 +12,11 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 type View = 'dashboard' | 'event-detail';
 
 function App() {
+  const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | undefined>(undefined);
+
   const { user, loading: authLoading } = useAuth();
   const {
     events,
@@ -31,11 +36,6 @@ function App() {
   if (authLoading || !user) {
     return <AuthScreen />;
   }
-
-  const [currentView, setCurrentView] = useState<View>('dashboard');
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [isEventFormOpen, setIsEventFormOpen] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<Event | undefined>(undefined);
 
   const handleAddEvent = () => {
     setEditingEvent(undefined);
