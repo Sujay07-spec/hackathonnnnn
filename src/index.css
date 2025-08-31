@@ -145,6 +145,22 @@
   animation: dataFlow 2s linear infinite;
 }
 
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-3000 {
+  animation-delay: 3s;
+}
+
+.border-3 {
+  border-width: 3px;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
