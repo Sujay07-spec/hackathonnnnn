@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Event } from './types';
+import { useAuth } from './hooks/useAuth';
 import { useFirebaseEvents } from './hooks/useFirebaseEvents';
+import { AuthScreen } from './components/AuthScreen';
 import { Dashboard } from './components/Dashboard';
 import { EventForm } from './components/EventForm';
 import { EventDetail } from './components/EventDetail';
@@ -10,6 +12,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 type View = 'dashboard' | 'event-detail';
 
 function App() {
+  const { user, loading: authLoading } = useAuth();
   const {
     events,
     todos,
@@ -23,6 +26,11 @@ function App() {
     deleteTodo,
     getTodosByEventId,
   } = useFirebaseEvents();
+
+  // Show auth screen if user is not authenticated
+  if (authLoading || !user) {
+    return <AuthScreen />;
+  }
 
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);

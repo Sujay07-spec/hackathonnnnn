@@ -4,6 +4,7 @@ export type EventStatus = 'upcoming' | 'live' | 'ongoing' | 'ended';
 
 export interface Event {
   id: string;
+  userId: string;
   type: EventType;
   name: string;
   startDate: string;
@@ -18,6 +19,7 @@ export interface Event {
 export interface TodoItem {
   id: string;
   eventId: string;
+  userId: string;
   title: string;
   completed: boolean;
   deadline?: string;
@@ -29,4 +31,12 @@ export interface FilterOptions {
   type: EventType | 'all';
   sortBy: 'date' | 'name' | 'created';
   sortOrder: 'asc' | 'desc';
+}
+
+export interface User {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL?: string;
+  createdAt: string;
 }

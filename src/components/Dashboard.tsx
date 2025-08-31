@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Filter, Search, Zap, Cpu, Wifi, Activity, Code, Calendar, Video, Building } from 'lucide-react';
+import { Plus, Filter, Search, Zap, Cpu, Wifi, Activity, Code, Calendar, Video, Building, User } from 'lucide-react';
 import { Event, TodoItem, FilterOptions } from '../types';
 import { EventCard } from './EventCard';
+import { UserProfile } from './UserProfile';
 import { updateEventStatus } from '../utils/dateUtils';
 
 interface DashboardProps {
@@ -114,6 +115,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
+        {/* User Profile */}
+        <div className="mb-8">
+          <UserProfile />
+        </div>
+        
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-6">

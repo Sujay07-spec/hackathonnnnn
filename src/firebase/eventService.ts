@@ -7,10 +7,11 @@ import {
   getDocs, 
   query, 
   orderBy,
+  where,
   onSnapshot,
   Timestamp 
 } from 'firebase/firestore';
-import { db } from './config';  // Ensure this points correctly to your firebase config export
+import { db, auth } from './config';
 import { Event, TodoItem } from '../types';
 import { updateEventStatus } from '../utils/dateUtils';
 
@@ -20,9 +21,13 @@ const TODOS_COLLECTION = 'todos';
 // Event operations
 export const addEventToFirestore = async (eventData: Omit<Event, 'id' | 'status' | 'createdAt'>) => {
   try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
     const eventWithStatus = updateEventStatus({ ...eventData } as Event);
     const docRef = await addDoc(collection(db, EVENTS_COLLECTION), {
       ...eventWithStatus,
+      userId: user.uid,
       createdAt: Timestamp.now(),
     });
     return docRef.id;
@@ -34,6 +39,9 @@ export const addEventToFirestore = async (eventData: Omit<Event, 'id' | 'status'
 
 export const updateEventInFirestore = async (id: string, updates: Partial<Event>) => {
   try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
     const eventRef = doc(db, EVENTS_COLLECTION, id);
     await updateDoc(eventRef, updates);
   } catch (error) {
@@ -44,17 +52,21 @@ export const updateEventInFirestore = async (id: string, updates: Partial<Event>
 
 export const deleteEventFromFirestore = async (id: string) => {
   try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
     const eventRef = doc(db, EVENTS_COLLECTION, id);
     await deleteDoc(eventRef);
     
     // Delete all todos linked to this event
-    const todosQuery = query(collection(db, TODOS_COLLECTION));
+    const todosQuery = query(
+      collection(db, TODOS_COLLECTION),
+      where('eventId', '==', id),
+      where('userId', '==', user.uid)
+    );
     const todosSnapshot = await getDocs(todosQuery);
 
-    // Filter and delete todos linked to the event id
-    const deletePromises = todosSnapshot.docs
-      .filter(todoDoc => todoDoc.data()?.eventId === id)
-      .map(todoDoc => deleteDoc(todoDoc.ref));
+    const deletePromises = todosSnapshot.docs.map(todoDoc => deleteDoc(todoDoc.ref));
     
     await Promise.all(deletePromises);
 
@@ -65,7 +77,17 @@ export const deleteEventFromFirestore = async (id: string) => {
 };
 
 export const subscribeToEvents = (callback: (events: Event[]) => void) => {
-  const q = query(collection(db, EVENTS_COLLECTION), orderBy('createdAt', 'desc'));
+  const user = auth.currentUser;
+  if (!user) {
+    callback([]);
+    return () => {};
+  }
+  
+  const q = query(
+    collection(db, EVENTS_COLLECTION),
+    where('userId', '==', user.uid),
+    orderBy('createdAt', 'desc')
+  );
   return onSnapshot(q, (snapshot) => {
     const events = snapshot.docs.map(doc => {
       const data = doc.data();
@@ -82,8 +104,12 @@ export const subscribeToEvents = (callback: (events: Event[]) => void) => {
 // Todo operations
 export const addTodoToFirestore = async (todoData: Omit<TodoItem, 'id' | 'createdAt'>) => {
   try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
     const docRef = await addDoc(collection(db, TODOS_COLLECTION), {
       ...todoData,
+      userId: user.uid,
       createdAt: Timestamp.now(),
     });
     return docRef.id;
@@ -95,6 +121,9 @@ export const addTodoToFirestore = async (todoData: Omit<TodoItem, 'id' | 'create
 
 export const updateTodoInFirestore = async (id: string, updates: Partial<TodoItem>) => {
   try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
     const todoRef = doc(db, TODOS_COLLECTION, id);
     await updateDoc(todoRef, updates);
   } catch (error) {
@@ -105,6 +134,9 @@ export const updateTodoInFirestore = async (id: string, updates: Partial<TodoIte
 
 export const deleteTodoFromFirestore = async (id: string) => {
   try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
     const todoRef = doc(db, TODOS_COLLECTION, id);
     await deleteDoc(todoRef);
   } catch (error) {
@@ -114,7 +146,17 @@ export const deleteTodoFromFirestore = async (id: string) => {
 };
 
 export const subscribeToTodos = (callback: (todos: TodoItem[]) => void) => {
-  const q = query(collection(db, TODOS_COLLECTION), orderBy('createdAt', 'desc'));
+  const user = auth.currentUser;
+  if (!user) {
+    callback([]);
+    return () => {};
+  }
+  
+  const q = query(
+    collection(db, TODOS_COLLECTION),
+    where('userId', '==', user.uid),
+    orderBy('createdAt', 'desc')
+  );
   return onSnapshot(q, (snapshot) => {
     const todos = snapshot.docs.map(doc => {
       const data = doc.data();
